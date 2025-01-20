@@ -1,0 +1,197 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body */
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #ff7e5f, #feb47b);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+/* Header */
+header {
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+}
+
+nav {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 30px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 600px;
+    /* Aumentar el max-width para más espacio */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    margin: 0 auto;
+    /* Centrar el nav */
+}
+
+nav h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #feb47b;
+}
+
+/* Botón para añadir post */
+#logoutButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #ff7e5f;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#logoutButton:hover {
+    background-color: #feb47b;
+}
+
+/* Estilos para la barra de búsqueda y el botón para añadir posts */
+#searchAndAdd {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+#searchBar {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+    width: 300px;
+    background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro */
+    color: #fff; /* Letras blancas */
+}
+
+#searchBar::placeholder {
+    color: #ccc; /* Color del placeholder */
+}
+
+#addPostButton {
+    background-color: #ff7e5f;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#addPostButton:hover {
+    background-color: #feb47b;
+}
+
+/* Main Section for Cards */
+#cardsSection {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.card {
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px;
+    flex: 1 1 calc(33.333% - 40px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Estilos para los controles de paginación */
+#paginationControls {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.pagination-button {
+    background-color: #ff7e5f;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #fff;
+    cursor: pointer;
+    margin: 0 5px;
+    transition: background-color 0.3s ease;
+}
+
+.pagination-button:disabled {
+    background-color: #feb47b;
+    cursor: default;
+}
+
+.pagination-button:hover:not(:disabled) {
+    background-color: #feb47b;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card {
+        flex: 1 1 calc(50% - 40px);
+        /* Ajustar el ancho para pantallas más pequeñas */
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        flex: 1 1 calc(100% - 40px);
+        /* Ajustar el ancho para pantallas muy pequeñas */
+    }
+}
+
+/* Footer */
+footer {
+    margin-top: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    #registerSection {
+        padding: 20px;
+        width: 100%;
+    }
+
+    .card {
+        width: 100%;
+        max-width: 300px;
+    }
+}

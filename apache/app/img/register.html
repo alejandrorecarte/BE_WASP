@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link rel="stylesheet" href="../css/register.css"> <!-- Se utiliza el mismo archivo CSS -->
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <nav>
+            <img src="../favicon.ico" alt="Logo" style="width: 100px; height: 100px;">
+            <h1>Industrial Fleets</h1>
+        </nav>
+    </header>
+
+    <!-- Main Section for Register Form -->
+    <section id="registerSection">
+        <form id="form">
+            <h1>Registro</h1>
+            
+            <!-- Form Fields for Email, Name, Surname, and Password -->
+            <div id="formCampos">
+                <input type="text" id="email" placeholder="Email" required><br>
+                <input type="text" id="name" placeholder="Nombre" required><br>
+                <input type="text" id="surname" placeholder="Apellidos" required><br>
+                <input type="password" id="password" placeholder="Contraseña" required><br>
+            </div>
+            
+            <!-- Submit Button -->
+            <button id="formButton" type="submit">Registrarse</button>
+            <button id="backButton">Volver</button>
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer></footer>
+
+    <script src="../js/register.js"></script> <!-- Este es el archivo JS de registro -->
+</body>
+</html>

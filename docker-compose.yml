@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: mariadb/Dockerfile
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - docker_mariadb_data:/var/lib/mysql
+      - ./mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "8001:80"
+    depends_on:
+      - db
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: fastapi/Dockerfile
+    container_name: fastapi
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+      PYTHONBUFFERED: 1
+      CONNECTION_TRIES: ${CONNECTION_TRIES}
+      EXPIRATION_MINUTES: ${EXPIRATION_MINUTES}
+      SECRET_KEY: ${SECRET_KEY}
+      PAGE_SIZE: ${PAGE_SIZE}
+      MAX_IMAGE_SIZE: ${MAX_IMAGE_SIZE}
+    volumes:
+      - ./fastapi/app:/fastapi/app
+
+  apache:
+    build:
+      context: .
+      dockerfile: apache/Dockerfile
+    container_name: apache
+    ports:
+      - "7777:80"
+    volumes:
+      - ./apache/app:/usr/local/apache2/htdocs/
+    depends_on:
+      - db
+      - fastapi
+
+volumes:
+  docker_mariadb_data:
+    driver: local
