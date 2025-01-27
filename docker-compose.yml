@@ -1,49 +1,34 @@
 version: '3.8'
 
 services:
-  db:
-    build:
-      context: .
-      dockerfile: mariadb/Dockerfile
-    container_name: mariadb
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
     ports:
-      - "3306:3306"
+      - "27017:27017"
     volumes:
-      - docker_mariadb_data:/var/lib/mysql
-      - ./mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mongo_data:/data/db
+      - ./mongodb:/docker-entrypoint-initdb.d
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
-    container_name: phpmyadmin
-    environment:
-      PMA_HOST: db
-      PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    ports:
-      - "8001:80"
-    depends_on:
-      - db
-
-  fastapi:
+  api:
     build:
       context: .
-      dockerfile: fastapi/Dockerfile
-    container_name: fastapi
+      dockerfile: api/Dockerfile
+    container_name: api
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      - mongodb
     environment:
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_USER: ${MYSQL_USER}
-      DB_PASSWORD: ${MYSQL_PASSWORD}
-      DB_NAME: ${MYSQL_DATABASE}
+      DB_HOST: mongodb
+      DB_PORT: 27017
+      DB_USER: ${MONGO_INITDB_ROOT_USERNAME}
+      DB_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      DB_NAME: ${MONGO_INITDB_DATABASE}
       PYTHONBUFFERED: 1
       CONNECTION_TRIES: ${CONNECTION_TRIES}
       EXPIRATION_MINUTES: ${EXPIRATION_MINUTES}
@@ -51,21 +36,8 @@ services:
       PAGE_SIZE: ${PAGE_SIZE}
       MAX_IMAGE_SIZE: ${MAX_IMAGE_SIZE}
     volumes:
-      - ./fastapi/app:/fastapi/app
-
-  apache:
-    build:
-      context: .
-      dockerfile: apache/Dockerfile
-    container_name: apache
-    ports:
-      - "7777:80"
-    volumes:
-      - ./apache/app:/usr/local/apache2/htdocs/
-    depends_on:
-      - db
-      - fastapi
+      - ./api/app:/api/app
 
 volumes:
-  docker_mariadb_data:
+  mongo_data:
     driver: local

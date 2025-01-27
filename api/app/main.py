@@ -2,8 +2,6 @@ import os
 from fastapi import FastAPI, Depends, Request
 from starlette.middleware.cors import CORSMiddleware
 from api.user import router as user_router
-from api.post import router as post_router
-from api.vehicle import router as vehicle_router
 from database import close_connection
 import logging
 from database import get_db_connection
@@ -27,8 +25,6 @@ app = FastAPI()
 
 # Incluir los routers para los diferentes endpoints
 app.include_router(user_router, prefix="/users", tags=["Users"])
-app.include_router(post_router, prefix="/post", tags=["Posts"])
-app.include_router(vehicle_router, prefix="/vehicle", tags=["Vehicles"])
 
 # Agregar middleware para CORS (Compartir recursos entre orígenes)
 app.add_middleware(

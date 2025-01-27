@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, status, Response, Depends, Request
 from pydantic import BaseModel
-from models.user import User
 from database import get_db_connection
 import logging
 from controllers.user import register, login
 from utils import get_token_from_cookie
+from models.user import User
 
 logger = logging.getLogger(__name__)
 
