@@ -2,11 +2,11 @@ import pymysql
 import os
 import time
 import logging
-from controllers.exceptions import DbException
-from fastapi import Depends
+from app.controllers.exceptions import DbException
 
 # Configuración del logger
 logger = logging.getLogger(__name__)
+
 
 def establish_connection():
     """

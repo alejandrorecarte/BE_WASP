@@ -1,11 +1,12 @@
 import os
 from fastapi import FastAPI, Depends, Request
 from starlette.middleware.cors import CORSMiddleware
-from api.user import router as user_router
+
+from users.api.routers import router
 from database import close_connection
 import logging
 from database import get_db_connection
-from utils import get_token_from_cookie
+from app.utils import get_token_from_cookie
 
 # Leer las variables de entorno sin asignarles valores en el código
 CONNECTION_TRIES = os.getenv("CONNECTION_TRIES")  # Lee el número de intentos de conexión
@@ -21,10 +22,14 @@ DB_USER = os.getenv("DB_USER")  # Usuario de la base de datos
 DB_PASSWORD = os.getenv("DB_PASSWORD")  # Contraseña de la base de datos
 DB_NAME = os.getenv("DB_NAME")  # Nombre de la base de datos
 
-app = FastAPI()
+app = FastAPI(
+    docs_url="/api/docs",          # Custom Swagger UI URL
+    redoc_url="/api/redoc",        # Custom ReDoc URL
+    openapi_url="/api/openapi.json"  # OpenAPI schema path
+)
 
 # Incluir los routers para los diferentes endpoints
-app.include_router(user_router, prefix="/users", tags=["Users"])
+app.include_router(router, prefix="/users", tags=["Users"])
 
 # Agregar middleware para CORS (Compartir recursos entre orígenes)
 app.add_middleware(
@@ -41,7 +46,7 @@ logging.basicConfig(
     format='%(levelname)s - %(name)s - %(asctime)s - %(message)s',
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler('app.log')  # Guardar los logs en el archivo app.log
+        logging.FileHandler('app/app.log')  # Guardar los logs en el archivo app.log
     ]
 )
 

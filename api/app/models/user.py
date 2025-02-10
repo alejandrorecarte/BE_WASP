@@ -1,6 +1,7 @@
 from pydantic import BaseModel, root_validator
 from utils import hash
 
+
 class User(BaseModel):
     email: str
     name: str
