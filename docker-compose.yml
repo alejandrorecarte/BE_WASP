@@ -10,6 +10,7 @@ services:
       - "8000:8000"
     environment:
       MONGO_URI: ${MONGO_URI}  # MongoDB Atlas URI
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
       PYTHONBUFFERED: 1
       CONNECTION_TRIES: ${CONNECTION_TRIES}
       EXPIRATION_MINUTES: ${EXPIRATION_MINUTES}

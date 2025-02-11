@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Response, Depends
 import logging
 
-from dependencies.users.controllers.handlers import get_user_handler
+from dependencies.users.controllers import get_user_handler
 from users.api.request_data_models import RequestLoginData, RequestRegisterData
 from users.api.response_data_models import ResponseRegisterData, ResponseLoginData, ResponseLogoutData
 from users.controllers.handler_interface import UserHandlerInterface
@@ -19,10 +19,10 @@ def post_register(
     handler: UserHandlerInterface = Depends(get_user_handler)
 ):
     try:
-        handler.register(input_register=InputRegisterData.model_validate(request_data))
-        output_login = handler.login(input_login=InputLoginData.model_validate(request_data))
+        handler.register(input_register=InputRegisterData.model_validate(request_data.model_dump()))
+        output_login = handler.login(input_login=InputLoginData.model_validate(request_data.model_dump()))
         response.set_cookie(key="access_token", value=output_login.access_token, httponly=True, secure=True, samesite='Strict')
-        return ResponseRegisterData.model_validate(output_login)
+        return ResponseRegisterData.model_validate(output_login.model_dump())
     except Exception as error:
         logger.warning(str(error))
         raise HTTPException(

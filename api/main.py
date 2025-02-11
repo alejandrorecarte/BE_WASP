@@ -3,9 +3,7 @@ from fastapi import FastAPI, Depends, Request
 from starlette.middleware.cors import CORSMiddleware
 
 from users.api.routers import router
-from database import close_connection
 import logging
-from database import get_db_connection
 from app.utils import get_token_from_cookie
 
 # Leer las variables de entorno sin asignarles valores en el código
@@ -58,15 +56,6 @@ logger = logging.getLogger(__name__)
 async def startup_event():
     """Evento que se ejecuta al iniciar la aplicación"""
     logger.info("Application started")
-
-# Evento de cierre de la aplicación
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Cerrar la conexión a la base de datos al apagar la aplicación"""
-    db_connection = await get_db_connection()
-
-    if db_connection:
-        close_connection(db_connection)
 
 # Endpoint protegido que obtiene el token desde las cookies
 @app.get("/secure-endpoint")
