@@ -1,19 +1,6 @@
 version: '3.8'
 
 services:
-  mongodb:
-    image: mongo:latest
-    container_name: mongodb
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-      - ./mongodb:/docker-entrypoint-initdb.d
-
   api:
     build:
       context: .
@@ -21,14 +8,9 @@ services:
     container_name: api
     ports:
       - "8000:8000"
-    depends_on:
-      - mongodb
     environment:
-      DB_HOST: mongodb
-      DB_PORT: 27017
-      DB_USER: ${MONGO_INITDB_ROOT_USERNAME}
-      DB_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      DB_NAME: ${MONGO_INITDB_DATABASE}
+      MONGO_URI: ${MONGO_URI}  # MongoDB Atlas URI
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
       PYTHONBUFFERED: 1
       CONNECTION_TRIES: ${CONNECTION_TRIES}
       EXPIRATION_MINUTES: ${EXPIRATION_MINUTES}
@@ -36,8 +18,4 @@ services:
       PAGE_SIZE: ${PAGE_SIZE}
       MAX_IMAGE_SIZE: ${MAX_IMAGE_SIZE}
     volumes:
-      - ./api/app:/api/app
-
-volumes:
-  mongo_data:
-    driver: local
+      - ./api:/api
