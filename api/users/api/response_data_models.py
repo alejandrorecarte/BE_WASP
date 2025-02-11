@@ -3,6 +3,11 @@ from typing import Optional
 from app.api.response_data_models import ResponseData
 
 
+class ResponseAuthGoogleCallbackData(ResponseData):
+    message: Optional[str] = "Google authentication successful"
+    access_token: Optional[str] = None
+
+
 class ResponseLoginData(ResponseData):
     message: Optional[str] = "Login successful"
     access_token: Optional[str] = None

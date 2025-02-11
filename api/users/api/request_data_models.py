@@ -1,6 +1,10 @@
 from pydantic import BaseModel
 
 
+class RequestAuthGoogleCallbackData(BaseModel):
+    code: str
+
+
 class RequestRegisterData(BaseModel):
     email: str
     name: str

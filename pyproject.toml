@@ -1,0 +1,2 @@
+[tool.black]
+line-length = 100  # Cambia este valor según tus preferencias

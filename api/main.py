@@ -1,10 +1,9 @@
-import os
-from fastapi import FastAPI, Depends, Request
-from starlette.middleware.cors import CORSMiddleware
-
-from users.api.routers import router
 import logging
-from app.utils import get_token_from_cookie
+import os
+
+from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
+from users.api.routers import router
 
 # Leer las variables de entorno sin asignarles valores en el código
 CONNECTION_TRIES = os.getenv("CONNECTION_TRIES")  # Lee el número de intentos de conexión
@@ -21,9 +20,9 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")  # Contraseña de la base de datos
 DB_NAME = os.getenv("DB_NAME")  # Nombre de la base de datos
 
 app = FastAPI(
-    docs_url="/api/docs",          # Custom Swagger UI URL
-    redoc_url="/api/redoc",        # Custom ReDoc URL
-    openapi_url="/api/openapi.json"  # OpenAPI schema path
+    docs_url="/api/docs",  # Custom Swagger UI URL
+    redoc_url="/api/redoc",  # Custom ReDoc URL
+    openapi_url="/api/openapi.json",  # OpenAPI schema path
 )
 
 # Incluir los routers para los diferentes endpoints
@@ -32,35 +31,18 @@ app.include_router(router, prefix="/users", tags=["Users"])
 # Agregar middleware para CORS (Compartir recursos entre orígenes)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],  # Permitir solicitudes desde el frontend
+    allow_origins=["*"],  # Permite todos los orígenes (solo para desarrollo)
     allow_credentials=True,
-    allow_methods=["*"],  # Permitir todos los métodos (GET, POST, etc.)
-    allow_headers=["*"],  # Permitir todos los encabezados
+    allow_methods=["*"],  # Permite todos los métodos (GET, POST, etc.)
+    allow_headers=["*"],  # Permite todos los headers
 )
 
 # Configuración del logger para registrar mensajes
 logging.basicConfig(
     level=logging.DEBUG,
-    format='%(levelname)s - %(name)s - %(asctime)s - %(message)s',
+    format="%(levelname)s - %(name)s - %(asctime)s - %(message)s",
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler('app/app.log')  # Guardar los logs en el archivo app.log
-    ]
+        # logging.FileHandler('app/app.log')  # Guardar los logs en el archivo app.log
+    ],
 )
-
-# Crear un logger para esta aplicación
-logger = logging.getLogger(__name__)
-
-# Evento de inicio de la aplicación
-@app.on_event("startup")
-async def startup_event():
-    """Evento que se ejecuta al iniciar la aplicación"""
-    logger.info("Application started")
-
-# Endpoint protegido que obtiene el token desde las cookies
-@app.get("/secure-endpoint")
-def secure_endpoint(request: Request, token: str = Depends(get_token_from_cookie)):
-    """
-    Endpoint protegido que requiere el token desde las cookies.
-    """
-    return {"message": "Access granted", "token": token}

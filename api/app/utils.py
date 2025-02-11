@@ -1,16 +1,20 @@
+import os
+from datetime import datetime, timedelta, timezone
+
 import bcrypt
 import jwt
-import os
-from fastapi import HTTPException, status, Request
-from datetime import datetime, timedelta, timezone
+from fastapi import HTTPException, Request, status
+
 
 def hash(value):
     if value:
-        hashed = bcrypt.hashpw(value.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        hashed = bcrypt.hashpw(value.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
     return hashed
 
+
 def verify_hash(value, stored_hash):
-    return bcrypt.checkpw(value.encode('utf-8'), stored_hash.encode('utf-8'))
+    return bcrypt.checkpw(value.encode("utf-8"), stored_hash.encode("utf-8"))
+
 
 def get_token_from_cookie(request: Request):
     """
@@ -20,10 +24,10 @@ def get_token_from_cookie(request: Request):
     access_token = request.cookies.get("access_token")
     if not access_token:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Access token not found"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Access token not found"
         )
     return verify_token(access_token)
+
 
 def verify_token(token: str) -> dict:
     """
@@ -36,22 +40,25 @@ def verify_token(token: str) -> dict:
         exp_datetime = datetime.utcfromtimestamp(exp_timestamp).replace(tzinfo=timezone.utc)
         current_datetime = datetime.now(timezone.utc)
         if current_datetime > exp_datetime:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired")
-        
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired"
+            )
+
         return payload
-    
+
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate token")
-    
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate token"
+        )
+
+
 def create_token(email: str):
-    
-        expiration_time = datetime.now(timezone.utc) + timedelta(minutes=int(os.getenv("EXPIRATION_MINUTES")))
-        payload = {
-            "user_email": email,
-            "exp": expiration_time
-        }
-        return jwt.encode(payload, os.getenv("SECRET_KEY"), algorithm="HS256")
+    expiration_time = datetime.now(timezone.utc) + timedelta(
+        minutes=int(os.getenv("EXPIRATION_MINUTES"))
+    )
+    payload = {"user_email": email, "exp": expiration_time}
+    return jwt.encode(payload, os.getenv("SECRET_KEY"), algorithm="HS256")

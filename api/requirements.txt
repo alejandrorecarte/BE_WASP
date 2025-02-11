@@ -9,3 +9,5 @@ python-multipart
 pydantic
 pydantic[email]
 pymongo
+httpx
+pre-commit

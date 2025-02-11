@@ -1,7 +1,7 @@
-from pymongo.database import Database
 from typing import Optional
 
 from app.databases.handler_interface import DBHandlerInterface
+from pymongo.database import Database
 
 
 class DBHandler(DBHandlerInterface):
