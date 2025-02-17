@@ -20,3 +20,8 @@ class ResponseRegisterData(ResponseData):
 
 class ResponseLogoutData(ResponseData):
     message: Optional[str] = "Logout successful"
+
+
+class ResponseMeData(ResponseData):
+    message: Optional[str] = "User information retrieved"
+    user: Optional[dict] = None

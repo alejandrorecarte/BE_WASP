@@ -13,6 +13,7 @@ from users.api.response_data_models import (
     ResponseAuthGoogleCallbackData,
     ResponseLoginData,
     ResponseLogoutData,
+    ResponseMeData,
     ResponseRegisterData,
 )
 from users.controllers.constants import GOOGLE_AUTH_URL, GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI
@@ -22,6 +23,8 @@ from users.controllers.input_data_models import (
     InputLoginData,
     InputRegisterData,
 )
+
+from api.auth.utils import verify
 
 logger = logging.getLogger(__name__)
 
@@ -33,16 +36,19 @@ oauth2_scheme = OAuth2AuthorizationCodeBearer(
 )
 
 
-# TODO: Implementar la ruta de autenticación con Google
-@router.get("/auth/google")
+@router.get("/auth/google", status_code=status.HTTP_200_OK)
 async def login_google():
-    return RedirectResponse(
-        url=(
-            f"{GOOGLE_AUTH_URL}?response_type=code&client_id={GOOGLE_CLIENT_ID}"
-            f"&redirect_uri={GOOGLE_REDIRECT_URI}&scope=openid%20profile%20email"
-            f"&access_type=offline"
+    try:
+        return RedirectResponse(
+            url=(
+                f"{GOOGLE_AUTH_URL}?response_type=code&client_id={GOOGLE_CLIENT_ID}"
+                f"&redirect_uri={GOOGLE_REDIRECT_URI}&scope=openid%20profile%20email"
+                f"&access_type=offline"
+            )
         )
-    )
+    except Exception as error:
+        logger.warning(str(error))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
 
 
 @router.post(
@@ -54,7 +60,7 @@ async def auth_google_callback(
     request_data: RequestAuthGoogleCallbackData,
     response: Response,
     handler: UserHandlerInterface = Depends(get_user_handler),
-):  # Aquí se recibe el `code`
+):
     try:
         output_auth_google_callback = handler.auth_google_callback(
             input_auth_google_callback=InputAuthGoogleCallbackData(code=request_data.code)
@@ -99,7 +105,6 @@ def post_register(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
 
 
-# TODO: Implementar la funcionalidad de login
 @router.post("/login", status_code=status.HTTP_202_ACCEPTED, response_model=ResponseLoginData)
 def post_login(
     request_data: RequestLoginData,
@@ -139,6 +144,20 @@ def post_logout(response: Response):
 
         return ResponseLogoutData()
 
+    except Exception as error:
+        logger.warning(str(error))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
+
+
+@router.get("/me", status_code=status.HTTP_200_OK, response_model=ResponseMeData)
+def get_me(
+    response: Response,
+    handler: UserHandlerInterface = Depends(get_user_handler),
+    access_token: str = Depends(verify),
+):
+    try:
+        user = handler.get_me()
+        return ResponseMeData(user=user)
     except Exception as error:
         logger.warning(str(error))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
