@@ -1,6 +1,7 @@
-from dependencies.databases import get_db
 from fastapi import Depends
 from pymongo.database import Database
+
+from dependencies.databases import get_db
 from users.databases.handler import UserDBHandler
 
 

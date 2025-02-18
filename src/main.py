@@ -3,7 +3,8 @@ import os
 
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-from users.api.routers import router
+
+from users.api.routers import router as users_router
 
 # Leer las variables de entorno sin asignarles valores en el código
 CONNECTION_TRIES = os.getenv("CONNECTION_TRIES")  # Lee el número de intentos de conexión
@@ -26,7 +27,7 @@ app = FastAPI(
 )
 
 # Incluir los routers para los diferentes endpoints
-app.include_router(router, prefix="/users", tags=["Users"])
+app.include_router(users_router, prefix="/users", tags=["Users"])
 
 # Agregar middleware para CORS (Compartir recursos entre orígenes)
 app.add_middleware(

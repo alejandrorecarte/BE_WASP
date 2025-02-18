@@ -2,16 +2,16 @@
 FROM python:3.10-slim
 
 # Establece el directorio de trabajo
-WORKDIR /api
+WORKDIR /src
 
 # Copia el archivo requirements.txt a la carpeta de trabajo
-COPY api/requirements.txt /api
+COPY requirements.txt /src
 
 # Instala las dependencias necesarias
-RUN pip install --no-cache-dir -r /api/requirements.txt
+RUN pip install --no-cache-dir -r /src/requirements.txt
 
 # Copia todo el contenido de la carpeta 'app' al contenedor
-COPY api /api
+COPY src /src
 
 # Expone el puerto en el que FastAPI estará corriendo
 EXPOSE 8000

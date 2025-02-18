@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 
 from users.controllers.input_data_models import (
-    InputAuthGoogleCallbackData,
+    InputGoogleLoginData,
     InputLoginData,
     InputRegisterData,
 )
 from users.controllers.output_data_models import (
-    OutputAuthGoogleCallbackData,
+    OutputGoogleLoginData,
     OutputLoginData,
     OutputRegisterData,
 )
@@ -14,9 +14,7 @@ from users.controllers.output_data_models import (
 
 class UserHandlerInterface(ABC):
     @abstractmethod
-    def auth_google_callback(
-        self, input_auth_google_callback: InputAuthGoogleCallbackData
-    ) -> OutputAuthGoogleCallbackData:
+    def google_login(self, input_google_login: InputGoogleLoginData) -> OutputGoogleLoginData:
         pass
 
     @abstractmethod

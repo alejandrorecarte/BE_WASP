@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class InputAuthGoogleCallbackData(BaseModel):
+class InputGoogleLoginData(BaseModel):
     code: str
 
     class Config:

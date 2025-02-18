@@ -4,7 +4,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: api/Dockerfile
+      dockerfile: src/Dockerfile
     container_name: api
     ports:
       - "8000:8000"
@@ -25,4 +25,4 @@ services:
       GOOGLE_USER_INFO_URL: ${GOOGLE_USER_INFO_URL}
 
     volumes:
-      - ./api:/api
+      - ./src:/src

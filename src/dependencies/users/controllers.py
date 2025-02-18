@@ -1,6 +1,7 @@
+from fastapi import Depends
+
 from app.databases.handler_interface import DBHandlerInterface
 from dependencies.users.databases import get_user_db_handler
-from fastapi import Depends
 from users.controllers.handler_interface import UserHandlerInterface
 from users.controllers.handlers import UserHandler
 

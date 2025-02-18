@@ -1,10 +1,11 @@
 import logging
 import os
 
-from app.databases.client_interface import DBClientInterface
 from pymongo.database import Database
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+
+from app.databases.client_interface import DBClientInterface
 
 logger = logging.getLogger(__name__)
 

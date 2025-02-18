@@ -1,24 +1,24 @@
-from typing import Optional
-
 from pydantic import BaseModel
 
+from users.databases.models import User
 
-class OutputAuthGoogleCallbackData(BaseModel):
-    access_token: Optional[str] = None
+
+class OutputGoogleLoginData(BaseModel):
+    user: User
 
     class Config:
         extra = "allow"
 
 
 class OutputRegisterData(BaseModel):
-    access_token: Optional[str] = None
+    user: User
 
     class Config:
         extra = "allow"
 
 
 class OutputLoginData(BaseModel):
-    access_token: Optional[str] = None
+    user: User
 
     class Config:
         extra = "allow"
