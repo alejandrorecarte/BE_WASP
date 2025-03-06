@@ -23,6 +23,7 @@ services:
       GOOGLE_AUTH_URL: ${GOOGLE_AUTH_URL}
       GOOGLE_TOKEN_URL: ${GOOGLE_TOKEN_URL}
       GOOGLE_USER_INFO_URL: ${GOOGLE_USER_INFO_URL}
+      SALT: ${SALT}
 
     volumes:
       - ./src:/src

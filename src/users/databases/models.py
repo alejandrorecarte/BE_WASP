@@ -16,8 +16,8 @@ class User(BaseModel):
     type: str
     id: Optional[str] = Field(None, alias="_id", exclude=False)
     email: EmailStr
-    name: str
-    last_name: str
+    name: Optional[str] = None
+    last_name: Optional[str] = None
     password: Optional[str] = Field(None, exclude=True)
     hashed_password: Optional[str] = None
 

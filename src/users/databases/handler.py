@@ -10,12 +10,12 @@ class UserDBHandler(DBHandler):
     def __init__(self, db: Database):
         super().__init__(db, "users")
 
-    def create_user(self, user_data: User) -> User:
+    def create_user(self, user_data: User) -> str:
         user_dict = user_data.model_dump(
             by_alias=True, exclude={"id", "password"}
         )  # Exclude 'id' and 'password'
         user_id = self.create(user_dict)
-        return User(id=user_id, **user_dict)
+        return user_id
 
     def get_user_by_email(self, email: str) -> Optional[User]:
         user_data = self.get({"email": email})

@@ -13,7 +13,6 @@ class ResponseLoginData(ResponseData):
 
 class ResponseRegisterData(ResponseData):
     message: Optional[str] = "Register successful"
-    access_token: Optional[str] = None
 
 
 class ResponseLogoutData(ResponseData):

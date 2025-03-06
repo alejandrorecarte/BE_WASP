@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2AuthorizationCodeBearer
 
-from dependencies.users.controllers import get_user_handler
-from security.authentication import create_token, get_token_from_cookie
+from dependencies.users.controllers import get_google_login_handler, get_login_handler
+from security.authentication import create_token, get_token_from_cookie, invalidate_token
 from users.api.request_data_models import (
     RequestGoogleLoginData,
     RequestLoginData,
@@ -19,7 +19,7 @@ from users.api.response_data_models import (
     ResponseRegisterData,
 )
 from users.controllers.constants import GOOGLE_AUTH_URL, GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI
-from users.controllers.handler_interface import UserHandlerInterface
+from users.controllers.handler_interface import GoogleLoginHandlerInterface, LoginHandlerInterface
 from users.controllers.input_data_models import (
     InputGoogleLoginData,
     InputLoginData,
@@ -37,7 +37,7 @@ oauth2_scheme = OAuth2AuthorizationCodeBearer(
 
 
 @router.get("/google/redirect", status_code=status.HTTP_200_OK)
-async def login_google():
+async def google_redirect():
     try:
         return RedirectResponse(
             url=(
@@ -56,28 +56,14 @@ async def login_google():
     status_code=status.HTTP_200_OK,
     response_model=ResponseGoogleLoginData,
 )
-async def auth_google_callback(
+async def google_login(
     request_data: RequestGoogleLoginData,
     response: Response,
-    handler: UserHandlerInterface = Depends(get_user_handler),
+    handler: GoogleLoginHandlerInterface = Depends(get_google_login_handler),
 ):
     try:
-        output_google_login = await handler.google_login(
-            input_google_login=InputGoogleLoginData(code=request_data.code)
-        )
-
-        logger.info(f"Charging cookie for user: {output_google_login.user}")
-        response.set_cookie(
-            key="access_token",
-            value=create_token(
-                user_id=output_google_login.user.id, email=output_google_login.user.email
-            ),
-            httponly=True,
-            secure=True,
-            samesite="Strict",
-        )
-
-        return output_google_login.user
+        await handler.google_login(input_google_login=InputGoogleLoginData(code=request_data.code))
+        return ResponseGoogleLoginData()
     except Exception as error:
         logger.warning(str(error))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
@@ -91,21 +77,14 @@ async def auth_google_callback(
 def post_register(
     request_data: RequestRegisterData,
     response: Response,
-    handler: UserHandlerInterface = Depends(get_user_handler),
+    handler: LoginHandlerInterface = Depends(get_login_handler),
 ):
     try:
-        handler.register(input_register=InputRegisterData.model_validate(request_data.model_dump()))
-        output_login = handler.login(
-            input_login=InputLoginData.model_validate(request_data.model_dump())
+        output_register = handler.register(
+            input_register=InputRegisterData.model_validate(request_data.model_dump())
         )
-        response.set_cookie(
-            key="access_token",
-            value=output_login.access_token,
-            httponly=True,
-            secure=True,
-            samesite="Strict",
-        )
-        return ResponseRegisterData.model_validate(output_login.model_dump())
+        response = create_token(response=response, user_id=output_register.user_id)
+        return ResponseRegisterData()
     except Exception as error:
         logger.warning(str(error))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
@@ -115,23 +94,15 @@ def post_register(
 def post_login(
     request_data: RequestLoginData,
     response: Response,
-    handler: UserHandlerInterface = Depends(get_user_handler),
+    handler: LoginHandlerInterface = Depends(get_login_handler),
 ):
     try:
-        output_login = handler.login(input_login=InputLoginData.model_validate(request_data))
-        if access_token := output_login.access_token:
-            response.set_cookie(
-                key="access_token",
-                value=access_token,
-                httponly=True,
-                secure=True,
-                samesite="Strict",
-            )
-            return ResponseLoginData.model_validate(output_login)
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
-            )
+        output_login = handler.login(
+            input_login=InputLoginData.model_validate(request_data.model_dump())
+        )
+        response = create_token(response=response, user_id=output_login.user_id)
+        return ResponseLoginData()
+
     except Exception as error:
         logger.warning(str(error))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
@@ -140,14 +111,7 @@ def post_login(
 @router.post("/logout", status_code=status.HTTP_202_ACCEPTED, response_model=ResponseLogoutData)
 def post_logout(response: Response):
     try:
-        response.set_cookie(
-            key="access_token",
-            max_age=-1,
-            httponly=True,
-            secure=True,
-            samesite="Strict",
-        )
-
+        response = invalidate_token(response=response)
         return ResponseLogoutData()
 
     except Exception as error:
@@ -158,7 +122,7 @@ def post_logout(response: Response):
 @router.get("/me", status_code=status.HTTP_200_OK, response_model=ResponseMeData)
 def get_me(
     response: Response,
-    handler: UserHandlerInterface = Depends(get_user_handler),
+    handler: LoginHandlerInterface = Depends(get_login_handler),
     access_token: str = Depends(get_token_from_cookie),
 ):
     try:

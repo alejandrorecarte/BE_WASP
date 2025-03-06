@@ -11,7 +11,7 @@ from users.controllers.constants import (
     GOOGLE_TOKEN_URL,
     GOOGLE_USER_INFO_URL,
 )
-from users.controllers.handler_interface import UserHandlerInterface
+from users.controllers.handler_interface import GoogleLoginHandlerInterface, LoginHandlerInterface
 from users.controllers.input_data_models import (
     InputGoogleLoginData,
     InputLoginData,
@@ -28,7 +28,34 @@ from users.databases.models import User, UserType
 logger = logging.getLogger(__name__)
 
 
-class UserHandler(UserHandlerInterface):
+class LoginHandler(LoginHandlerInterface):
+    def __init__(self, db_handler: UserDBHandler):
+        self.db_handler = db_handler
+
+    def register(self, input_register: InputRegisterData) -> OutputRegisterData:
+        existing_user = self.db_handler.get({"email": input_register.email})
+        if existing_user:
+            raise ControlledException(status_code=400, detail="User already exists")
+
+        user_data = User.model_validate({**input_register.model_dump(), "type": UserType.INTERNAL})
+        user_id = self.db_handler.create_user(user_data=user_data)  # Insert user data into the DB
+
+        return OutputRegisterData(user_id=user_id)
+
+    def login(self, input_login: InputLoginData) -> OutputLoginData:
+        input_user = User.model_validate({**input_login.model_dump(), "type": UserType.INTERNAL})
+
+        user_data = self.db_handler.get({"email": input_user.email})
+        if not user_data:
+            raise HTTPException(status_code=400, detail="User not found")
+
+        if user_data["hashed_password"] != input_user.hashed_password:
+            raise HTTPException(status_code=400, detail="Incorrect password")
+
+        return OutputLoginData(user_id=str(user_data["_id"]))
+
+
+class GoogleLoginHandler(GoogleLoginHandlerInterface):
     def __init__(self, db_handler: UserDBHandler):
         self.db_handler = db_handler
 
@@ -67,7 +94,7 @@ class UserHandler(UserHandlerInterface):
 
             # Verificar si el usuario ya existe en la base de datos
             if user := self.db_handler.get_user_by_email(email=user_info_dict["email"]):
-                return OutputGoogleLoginData(user=user)
+                return OutputGoogleLoginData(user_id=user.id)
 
             user = User(
                 type=UserType.GOOGLE,
@@ -75,30 +102,6 @@ class UserHandler(UserHandlerInterface):
                 name=user_info_dict["given_name"],
                 last_name=user_info_dict["family_name"],
             )
-            user = self.db_handler.create_user(user_data=user)
+            user_id = self.db_handler.create_user(user_data=user)
             logger.info(f"Google user authenticated: {user_info_dict['email']}")
-            return OutputGoogleLoginData(user=user)
-
-    def register(self, input_register: InputRegisterData) -> OutputRegisterData:
-        existing_user = self.db_handler.get({"email": input_register.email})
-        if existing_user:
-            raise ControlledException(status_code=400, detail="User already exists")
-
-        user_data = User.model_validate(
-            input_register.model_dump()
-        )  # Convert the Pydantic model to a dictionary
-        self.db_handler.create_user(user_data=user_data)  # Insert user data into the DB
-
-        return OutputRegisterData(User(type=UserType.INTERNAL, **user_data))
-
-    def login(self, input_login: InputLoginData) -> OutputLoginData:
-        input_user = User.model_validate(input_login.model_dump())
-
-        user_data = self.db_handler.get({"email": input_user.email})
-        if not user_data:
-            raise HTTPException(status_code=400, detail="User not found")
-
-        if user_data.password != input_user.hashed_password:
-            raise HTTPException(status_code=400, detail="Incorrect password")
-
-        return OutputLoginData(**user_data)
+            return OutputGoogleLoginData(user_id=user_id)

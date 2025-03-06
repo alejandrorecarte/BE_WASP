@@ -19,6 +19,7 @@ DB_PORT = os.getenv("DB_PORT")  # Puerto de la base de datos
 DB_USER = os.getenv("DB_USER")  # Usuario de la base de datos
 DB_PASSWORD = os.getenv("DB_PASSWORD")  # Contraseña de la base de datos
 DB_NAME = os.getenv("DB_NAME")  # Nombre de la base de datos
+SALT = os.getenv("SALT")  # Sal para el hash de la contraseña
 
 app = FastAPI(
     docs_url="/api/docs",  # Custom Swagger UI URL
@@ -47,3 +48,6 @@ logging.basicConfig(
         # logging.FileHandler('app/app.log')  # Guardar los logs en el archivo app.log
     ],
 )
+
+# Establecer logs de pymongo en modo INFO
+logging.getLogger("pymongo").setLevel(logging.INFO)

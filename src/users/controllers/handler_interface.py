@@ -12,15 +12,17 @@ from users.controllers.output_data_models import (
 )
 
 
-class UserHandlerInterface(ABC):
-    @abstractmethod
-    def google_login(self, input_google_login: InputGoogleLoginData) -> OutputGoogleLoginData:
-        pass
-
+class LoginHandlerInterface(ABC):
     @abstractmethod
     def register(self, input_register: InputRegisterData) -> OutputRegisterData:
         pass
 
     @abstractmethod
     def login(self, input_login: InputLoginData) -> OutputLoginData:
+        pass
+
+
+class GoogleLoginHandlerInterface(ABC):
+    @abstractmethod
+    def google_login(self, input_google_login: InputGoogleLoginData) -> OutputGoogleLoginData:
         pass

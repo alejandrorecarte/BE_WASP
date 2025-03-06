@@ -1,24 +1,22 @@
 from pydantic import BaseModel
 
-from users.databases.models import User
-
 
 class OutputGoogleLoginData(BaseModel):
-    user: User
+    user_id: str
 
     class Config:
         extra = "allow"
 
 
 class OutputRegisterData(BaseModel):
-    user: User
+    user_id: str
 
     class Config:
         extra = "allow"
 
 
 class OutputLoginData(BaseModel):
-    user: User
+    user_id: str
 
     class Config:
         extra = "allow"
