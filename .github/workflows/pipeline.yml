@@ -1,0 +1,53 @@
+name: Python CI with Pre-commit, Pytest & SonarQube
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  ci_pipeline:
+    runs-on: ubuntu-latest
+    services:
+      docker:
+        image: docker:20.10.24
+        options: --privileged
+
+    steps:
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v3
+
+      - name: 🐍 Configurar Python y cachear dependencias
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: 📦 Instalar dependencias
+        run: |
+          python -m venv venv
+          . venv/bin/activate  # Usar 'venv\Scripts\activate' en Windows
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: ✅ Ejecutar pre-commit
+        run: |
+          . venv/bin/activate  # Usar 'venv\Scripts\activate' en Windows
+          pre-commit run --all-files
+
+      - name: 🚀 Ejecutar tests
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+          GOOGLE_AUTH_URL: ${{ secrets.GOOGLE_AUTH_URL }}
+          GOOGLE_TOKEN_URL: ${{ secrets.GOOGLE_TOKEN_URL }}
+          GOOGLE_USER_INFO_URL: ${{ secrets.GOOGLE_USER_INFO_URL }}
+          SALT: ${{ secrets.SALT }}
+        run: |
+          . venv/bin/activate  # Usar 'venv\Scripts\activate' en Windows
+          export PYTHONPATH=src:$PYTHONPATH
+          pytest -v

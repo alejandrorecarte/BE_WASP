@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+python-dotenv
+configparser
+bcrypt
+pyjwt
+starlette
+python-multipart
+pydantic
+pydantic[email]
+pymongo
+pytest
+pytest-asyncio
+pytest-mock
+httpx
+pre-commit

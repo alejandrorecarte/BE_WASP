@@ -1,0 +1,25 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0  # Versión de los hooks
+    hooks:
+      - id: trailing-whitespace  # Elimina espacios en blanco al final de las líneas
+      - id: end-of-file-fixer    # Asegura que los archivos terminen con una nueva línea
+      - id: check-yaml          # Verifica que los archivos YAML sean válidos
+      - id: check-added-large-files  # Evita commits con archivos grandes
+      - id: check-ast          # Verifica que el código Python sea válido
+      - id: debug-statements   # Detecta declaraciones de depuración en el código (como `print`)
+
+  - repo: https://github.com/psf/black
+    rev: 23.9.1  # Versión de Black
+    hooks:
+      - id: black  # Formatea el código Python con Black
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.12.0  # Versión de isort
+    hooks:
+      - id: isort  # Ordena las importaciones de Python
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.1.0  # Versión de Flake8
+    hooks:
+      - id: flake8  # Verifica el estilo y la calidad del código Python
