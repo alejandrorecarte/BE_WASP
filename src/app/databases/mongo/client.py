@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Optional
 
 from pymongo.database import Database
 from pymongo.mongo_client import MongoClient
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class MongoDBClient(DBClientInterface):
     _client: MongoClient = None  # Singleton instance
-    _database_name: str = None  # Store the database name
+    _database_name: Optional[str] = None  # Store the database name
 
     def __init__(self):
         """Initialize with optional database name."""

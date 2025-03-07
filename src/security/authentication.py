@@ -55,7 +55,7 @@ def create_token(response: Response, user_id: str):
 
 
 def invalidate_token(response: Response):
-    response = response.set_cookie(
+    response.set_cookie(
         key="access_token",
         max_age=-1,
         httponly=True,
