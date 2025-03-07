@@ -1,4 +1,4 @@
-name: Python CI with Docker, Pre-commit, Pytest & SonarQube
+name: Python CI with Pre-commit, Pytest & SonarQube
 
 on:
   push:
@@ -28,14 +28,20 @@ jobs:
 
       - name: 📦 Instalar dependencias
         run: |
+          python -m venv venv
+          . venv/bin/activate  # Usar 'venv\Scripts\activate' en Windows
           pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: ✅ Ejecutar pre-commit
-        run: pre-commit run --all-files
+        run: |
+          . venv/bin/activate  # Usar 'venv\Scripts\activate' en Windows
+          pre-commit run --all-files
 
       - name: 🚀 Ejecutar tests
-        run: pytest -v
+        run: |
+          . venv/bin/activate  # Usar 'venv\Scripts\activate' en Windows
+          pytest -v
 
       - name: 🔎 Análisis de SonarQube
         env:
