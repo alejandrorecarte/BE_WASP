@@ -51,23 +51,3 @@ jobs:
           . venv/bin/activate  # Usar 'venv\Scripts\activate' en Windows
           export PYTHONPATH=src:$PYTHONPATH
           pytest -v
-
-      - name: ☕ Instalar Java 17
-        run: sudo apt-get install openjdk-17-jdk -y
-
-      - name: 🔎 Análisis de SonarQube
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: "https://sonarcloud.io"
-        run: |
-          # Descargar SonarScanner
-          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
-          # Descomprimir el archivo
-          unzip sonar-scanner-cli-4.6.2.2472-linux.zip
-          # Añadir al PATH
-          export PATH=$PATH:$(pwd)/sonar-scanner-4.6.2.2472-linux/bin
-          sonar-scanner \
-            -Dsonar.projectKey=my_project \
-            -Dsonar.sources=. \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN
