@@ -52,6 +52,9 @@ jobs:
           export PYTHONPATH=src:$PYTHONPATH
           pytest -v
 
+      - name: ☕ Instalar Java 17
+        run: sudo apt-get install openjdk-17-jdk -y
+
       - name: 🔎 Análisis de SonarQube
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
