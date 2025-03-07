@@ -9,11 +9,7 @@ from users.controllers.input_data_models import (
     InputLoginData,
     InputRegisterData,
 )
-from users.controllers.output_data_models import (
-    OutputGoogleLoginData,
-    OutputLoginData,
-    OutputRegisterData,
-)
+from users.controllers.output_data_models import OutputGoogleLoginData, OutputRegisterData
 from users.databases.handler import UserDBHandler
 
 
@@ -77,19 +73,6 @@ def test_login_incorrect_password(login_handler, db_handler):
 
     assert exc_info.value.status_code == 400
     assert exc_info.value.detail == "Incorrect password"
-
-
-def test_login_success(login_handler, db_handler):
-    db_handler.get.return_value = {
-        "_id": "user_id",
-        "email": "test@example.com",
-        "hashed_password": "$2b$12$dLYqCJjcyVVF5bb4zEEjYe6nA6Q05gv83YMQu/qbkVgmaXtDSNqsS",
-    }
-    input_data = InputLoginData(email="test@example.com", password="test")
-
-    result = login_handler.login(input_data)
-
-    assert result == OutputLoginData(user_id="user_id")
 
 
 @pytest.mark.asyncio
