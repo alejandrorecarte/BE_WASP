@@ -1,5 +1,6 @@
 from typing import Optional
 
+from bson import ObjectId
 from pymongo.database import Database
 
 from app.databases.mongo.handler import DBHandler
@@ -16,6 +17,10 @@ class UserDBHandler(DBHandler):
         )  # Exclude 'id' and 'password'
         user_id = self.create(user_dict)
         return user_id
+
+    def get_user_by_id(self, user_id: str) -> Optional[User]:
+        user_data = self.get({"_id": ObjectId(user_id)})
+        return User(**user_data) if user_data else None
 
     def get_user_by_email(self, email: str) -> Optional[User]:
         user_data = self.get({"email": email})

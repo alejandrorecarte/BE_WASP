@@ -2,13 +2,15 @@ import os
 from datetime import datetime, timedelta, timezone
 
 import jwt
-from fastapi import HTTPException, Request, Response, status
+from fastapi import Request, Response, status
+
+from app.controllers.exceptions.exceptions import ControlledException
 
 
 def get_token_from_cookie(request: Request):
     access_token = request.cookies.get("access_token")
     if not access_token:
-        raise HTTPException(
+        raise ControlledException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Access token not found"
         )
     return verify_token(access_token)
@@ -21,18 +23,20 @@ def verify_token(token: str) -> dict:
         exp_datetime = datetime.fromtimestamp(exp_timestamp, tz=timezone.utc)
         current_datetime = datetime.now(timezone.utc)
         if current_datetime > exp_datetime:
-            raise HTTPException(
+            raise ControlledException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired"
             )
 
         return payload
 
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired")
+        raise ControlledException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired"
+        )
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+        raise ControlledException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
     except Exception:
-        raise HTTPException(
+        raise ControlledException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate token",
         )

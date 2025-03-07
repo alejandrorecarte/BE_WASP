@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from users.controllers.input_data_models import (
+    InputGetMeData,
     InputGoogleLoginData,
     InputLoginData,
     InputRegisterData,
@@ -19,6 +20,10 @@ class LoginHandlerInterface(ABC):
 
     @abstractmethod
     def login(self, input_login: InputLoginData) -> OutputLoginData:
+        pass
+
+    @abstractmethod
+    def get_me(self, input_login: InputGetMeData):
         pass
 
 

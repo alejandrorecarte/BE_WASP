@@ -21,4 +21,4 @@ class ResponseLogoutData(ResponseData):
 
 class ResponseMeData(ResponseData):
     message: Optional[str] = "User information retrieved"
-    user: Optional[dict] = None
+    user_id: Optional[str] = None
