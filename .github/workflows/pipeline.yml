@@ -41,6 +41,7 @@ jobs:
       - name: 🚀 Ejecutar tests
         run: |
           . venv/bin/activate  # Usar 'venv\Scripts\activate' en Windows
+          export PYTHONPATH=src:$PYTHONPATH
           pytest -v
 
       - name: 🔎 Análisis de SonarQube
