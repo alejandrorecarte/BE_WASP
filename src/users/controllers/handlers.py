@@ -3,7 +3,6 @@ import logging
 import httpx
 from fastapi import HTTPException, status
 
-from app.controllers.exceptions import ControlledException
 from users.controllers.constants import (
     GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET,
@@ -35,7 +34,7 @@ class LoginHandler(LoginHandlerInterface):
     def register(self, input_register: InputRegisterData) -> OutputRegisterData:
         existing_user = self.db_handler.get({"email": input_register.email})
         if existing_user:
-            raise ControlledException(status_code=400, detail="User already exists")
+            raise HTTPException(status_code=400, detail="User already exists")
 
         user_data = User.model_validate({**input_register.model_dump(), "type": UserType.INTERNAL})
         user_id = self.db_handler.create_user(user_data=user_data)  # Insert user data into the DB

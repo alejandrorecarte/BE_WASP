@@ -9,5 +9,8 @@ python-multipart
 pydantic
 pydantic[email]
 pymongo
+pytest
+pytest-asyncio
+pytest-mock
 httpx
 pre-commit
