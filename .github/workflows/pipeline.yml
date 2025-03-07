@@ -35,7 +35,7 @@ jobs:
         run: pre-commit run --all-files
 
       - name: 🚀 Ejecutar tests
-        run: pytest -vv --no-cov
+        run: pytest -v
 
       - name: 🔎 Análisis de SonarQube
         env:
