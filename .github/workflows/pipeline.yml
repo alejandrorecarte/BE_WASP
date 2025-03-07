@@ -28,16 +28,15 @@ jobs:
 
       - name: 📦 Instalar dependencias
         run: |
+          cd ../..
           pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: ✅ Ejecutar pre-commit
         run: pre-commit run --all-files
 
-      - name: 🚀 Levantar Docker y ejecutar tests
-        run: |
-          docker build -t my-python-app .
-          docker run --rm my-python-app pytest -vv --no-cov
+      - name: 🚀 Ejecutar tests
+        run: pytest -vv --no-cov
 
       - name: 🔎 Análisis de SonarQube
         env:
