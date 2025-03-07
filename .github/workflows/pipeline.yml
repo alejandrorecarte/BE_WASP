@@ -3,10 +3,10 @@ name: Python CI with Docker, Pre-commit, Pytest & SonarQube
 on:
   push:
     branches:
-      - main
+      - '**'
   pull_request:
     branches:
-      - main
+      - '**'
 
 jobs:
   ci_pipeline:
@@ -28,7 +28,6 @@ jobs:
 
       - name: 📦 Instalar dependencias
         run: |
-          cd ../..
           pip install --upgrade pip
           pip install -r requirements.txt
 
