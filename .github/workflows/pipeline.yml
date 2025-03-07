@@ -39,9 +39,16 @@ jobs:
           pre-commit run --all-files
 
       - name: 🚀 Ejecutar tests
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+          GOOGLE_AUTH_URL: ${{ secrets.GOOGLE_AUTH_URL }}
+          GOOGLE_TOKEN_URL: ${{ secrets.GOOGLE_TOKEN_URL }}
+          GOOGLE_USER_INFO_URL: ${{ secrets.GOOGLE_USER_INFO_URL }}
+          SALT: ${{ secrets.SALT }}
         run: |
           . venv/bin/activate  # Usar 'venv\Scripts\activate' en Windows
-          export PYTHONPATH=src:$PYTHONPATH
           pytest -v
 
       - name: 🔎 Análisis de SonarQube
